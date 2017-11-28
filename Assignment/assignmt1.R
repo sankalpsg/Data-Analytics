@@ -1,4 +1,3 @@
-
 # Defining the path
 path<-'C:/Users/guptasa/Downloads'
 setwd(path)
@@ -19,7 +18,7 @@ str(employee)
 # the modeling functions will treat such data correctly.
 
 #Converting variables into factors
-columns_factor<- c(2,3,5,7,8,10:12,14:18,22,23,25,26,31)
+columns_factor<- c(2,3,5,7,8,10:12,14,15:18,22,23,25,26,28,31)
 library(magrittr)
 library(dplyr)
 
@@ -80,9 +79,6 @@ drawTreeNodes(fit,cex=.8,pch=11,size=4*.8, col=NULL,nodeinfo=TRUE,
               units="",cases="obs",digits=getOption("digits"),decimals=2,print.levels=TRUE,
               new=TRUE)
 
-#Determining Variable Importance
-library(caret)
-varImp(fit)
 
 
 #Predicting the probabilities of the fit
@@ -90,10 +86,33 @@ predvalues<-predict(fit)
 
 
 #Predicting the probabilities of the test_set
-test <- predict(fit,test_set,type='class')
-summary(test)
+test_set$test_pred_prob <- predict(fit,test_set)
+test_pred <- predict(fit,test_set,type='class')
+summary(test_set$test_pred_prob)
 
-summary(test_set$Attrition)
+
+#Confusion Matrix
+ConfusionMatrix <- confusionMatrix(test_pred, test_set$Attrition, positive = "Yes")
+ConfusionMatrix
+
+
+
+#ROC Curve Analysis
+library(ROCR)
+demo(ROCR)
+predictn <-prediction(test_set$test_pred_prob[,2],test_set$Attrition)
+str(predictn)
+
+predictn@fp
+predictn@fn
+predictn@n.neg
+
+
+perf<-performance(predictn, "tpr","fpr")
+plot(perf)
+auc<-performance(predictn,"auc")@y.values
+auc
+
 
 
 
