@@ -80,6 +80,9 @@ drawTreeNodes(fit,cex=.8,pch=11,size=4*.8, col=NULL,nodeinfo=TRUE,
               units="",cases="obs",digits=getOption("digits"),decimals=2,print.levels=TRUE,
               new=TRUE)
 
+#Determining Variable Importance
+library(caret)
+varImp(fit)
 
 
 #Predicting the probabilities of the fit
